@@ -1,0 +1,14 @@
+In file included from ../Main.c:28:
+../avr/pgmspace.h:211: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:212: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:213: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:215: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:216: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:217: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:218: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:219: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:220: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:222: warning: '__progmem__' attribute directive ignored
+../avr/pgmspace.h:223: warning: '__progmem__' attribute directive ignored
+../Main.c: In function 'main':
+../Main.c:161: warning: unused variable 'i'

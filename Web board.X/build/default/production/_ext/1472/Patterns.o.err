@@ -1,0 +1,3 @@
+../Patterns.c: In function 'Eraseleds':
+../Patterns.c:28: warning: implicit declaration of function 'Delayus'
+../Patterns.c:36: warning: implicit declaration of function 'Delayms'
