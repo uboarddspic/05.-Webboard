@@ -11,4 +11,5 @@ In file included from ../Main.c:28:
 ../avr/pgmspace.h:222: warning: '__progmem__' attribute directive ignored
 ../avr/pgmspace.h:223: warning: '__progmem__' attribute directive ignored
 ../Main.c: In function 'main':
+../Main.c:183: warning: pointer targets in passing argument 1 of 'Putstr' differ in signedness
 ../Main.c:161: warning: unused variable 'i'

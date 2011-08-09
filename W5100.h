@@ -4,7 +4,7 @@
 #ifndef	__W5100_h
 #define	__W5100_h
 
-#define MAX_BUF 512
+#define MAX_BUF 1024
 #define SPI_CS	LATBbits.LATB11
 #define T_SPI_CS  TRISBbits.TRISB11=0;
 
