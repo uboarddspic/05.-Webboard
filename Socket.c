@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////
+/*/////////////////////////////////////////////////////////////////////////
 //
 //  File Name    : Socket.c
 //  Version      : 1.0
@@ -10,15 +10,14 @@
 //  Programmer   : uBRD bootloader
 //  Last Updated : 21-06-2011
 //
-//  Get latest updates from www.uboard.eu
-//  Copyright (c) Staronic 2011.
+//  Get latest updates from www.uBoard.eu
+//  Copyright (c) Bloxi 2011.
 //  All rights are reserved. Reproduction in whole or in part is
 //  prohibited without the written consent of the copyright owner.
-///////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////*/
 #include    "Delay.h"
 #include    "Socket.h"
 #include    "stdio.h"
-#include    "stdlib.h"
 #include    "string.h"
 #include    "W5100.h"
 
@@ -26,16 +25,16 @@ void close(unsigned char sock) {
     if (sock != 0)
         return;
 
-    // Send Close Command
-    SPI_Write(S0_CR, CR_CLOSE); // Wait until S0_CR is clear
+    /* Send Close Command */
+    SPI_Write(S0_CR, CR_CLOSE); /* Wait until S0_CR is clear */
     while (SPI_Read(S0_CR));
 }
 
 void disconnect(unsigned char sock) {
     if (sock != 0)
-        return; // Send disconnect command
+        return; /* Send disconnect command */
 
-    SPI_Write(S0_CR, CR_DISCON); // Wait for disconecting process
+    SPI_Write(S0_CR, CR_DISCON); /* Wait for disconecting process */
     while (SPI_Read(S0_CR));
 }
 
@@ -44,17 +43,17 @@ unsigned char socket(unsigned char sock, unsigned char eth_protocol, unsigned in
     if (sock != 0)
         return retval;
 
-    // Close socket first
+    /* Close socket first */
     if (SPI_Read(S0_SR) == SOCK_CLOSED) {
         close(sock);
-    } // Assigned Socket 0 Mode Register
+    } /* Assigned Socket 0 Mode Register */
     SPI_Write(S0_MR, eth_protocol);
 
-    // Now open the Socket 0
+    /* Now open the Socket 0 */
     SPI_Write(S0_PORT, ((tcp_port & 0xFF00) >> 8));
     SPI_Write(S0_PORT + 1, (tcp_port & 0x00FF));
-    SPI_Write(S0_CR, CR_OPEN); // Open Socket    // Wait for Opening Process
-    while (SPI_Read(S0_CR)); // Check for Init Status
+    SPI_Write(S0_CR, CR_OPEN); /* Open Socket, wait for Opening Process  */
+    while (SPI_Read(S0_CR)); /* Check for Init Status */
     if (SPI_Read(S0_SR) == SOCK_INIT)
         retval = 1;
     else
@@ -69,11 +68,11 @@ unsigned char listen(unsigned char sock) {
         return retval;
 
     if (SPI_Read(S0_SR) == SOCK_INIT) {
-        // Send the LISTEN Command
+        /* Send the LISTEN Command */
         SPI_Write(S0_CR, CR_LISTEN);
 
-        // Wait for Listening Process
-        while (SPI_Read(S0_CR)); // Check for Listen Status
+        /* Wait for Listening Process */
+        while (SPI_Read(S0_CR)); /* Check for Listen Status */
         if (SPI_Read(S0_SR) == SOCK_LISTEN)
             retval = 1;
         else
@@ -94,36 +93,36 @@ unsigned int send(unsigned char sock, const unsigned char *buf, unsigned int buf
     while (txsize < buflen) {
         Delayms(1);
         txsize = SPI_Read(SO_TX_FSR);
-        txsize = (((txsize & 0x00FF) << 8) + SPI_Read(SO_TX_FSR + 1)); // Timeout for approx 1000 ms
+        txsize = (((txsize & 0x00FF) << 8) + SPI_Read(SO_TX_FSR + 1)); /* Timeout for approx 1000 ms */
         if (timeout++ > 1000) {
 
-            // Disconnect the connection
+            /* Disconnect the connection */
             disconnect(sock);
             return 0;
         }
     }
 
-    // Read the Tx Write Pointer
+    /* Read the Tx Write Pointer */
     ptr = SPI_Read(S0_TX_WR);
     offaddr = (((ptr & 0x00FF) << 8) + SPI_Read(S0_TX_WR + 1));
 
     while (buflen) {
         buflen--;
-        // Calculate the real W5100 physical Tx Buffer Address
-        realaddr = TXBUFADDR + (offaddr & TX_BUF_MASK); // Copy the application data to the W5100 Tx Buffer
+        /* Calculate the real W5100 physical Tx Buffer Address */
+        realaddr = TXBUFADDR + (offaddr & TX_BUF_MASK); /* Copy the application data to the W5100 Tx Buffer */
         SPI_Write(realaddr, *buf);
         offaddr++;
         buf++;
     }
 
-    // Increase the S0_TX_WR value, so it point to the next transmit
+    /* Increase the S0_TX_WR value, so it point to the next transmit */
     SPI_Write(S0_TX_WR, (offaddr & 0xFF00) >> 8);
     SPI_Write(S0_TX_WR + 1, (offaddr & 0x00FF));
 
-    // Now Send the SEND command
+    /* Now Send the SEND command */
     SPI_Write(S0_CR, CR_SEND);
 
-    // Wait for Sending Process
+    /* Wait for Sending Process */
     while (SPI_Read(S0_CR));
 
     return 1;
@@ -134,9 +133,9 @@ unsigned int recv(unsigned char sock, unsigned char *buf, unsigned int buflen) {
 
     if (buflen <= 0 || sock != 0) return 1;
 
-    // If the request size > MAX_BUF,just truncate it
+    /* If the request size > MAX_BUF,just truncate it */
     if (buflen > MAX_BUF)
-        buflen = MAX_BUF - 2; // Read the Rx Read Pointer
+        buflen = MAX_BUF - 2; /* Read the Rx Read Pointer */
     ptr = SPI_Read(S0_RX_RD);
     offaddr = (((ptr & 0x00FF) << 8) + SPI_Read(S0_RX_RD + 1));
 
@@ -147,15 +146,15 @@ unsigned int recv(unsigned char sock, unsigned char *buf, unsigned int buflen) {
         offaddr++;
         buf++;
     }
-    *buf = '\0'; // String terminated character
+    *buf = '\0'; /* String terminated character */
 
-    // Increase the S0_RX_RD value, so it point to the next receive
+    /* Increase the S0_RX_RD value, so it point to the next receive */
     SPI_Write(S0_RX_RD, (offaddr & 0xFF00) >> 8);
     SPI_Write(S0_RX_RD + 1, (offaddr & 0x00FF));
 
-    // Now Send the RECV command
+    /* Now Send the RECV command */
     SPI_Write(S0_CR, CR_RECV);
-    Delayms(1); // Wait for Receive Process
+    Delayms(1); /* Wait for Receive Process */
 
     return 1;
 }

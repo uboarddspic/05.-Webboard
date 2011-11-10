@@ -13,4 +13,4 @@ unsigned int recv(unsigned char sock,unsigned char *buf,unsigned int buflen);
 unsigned int recv_size(void);
 int strindex(char *s,char *t);
 
-#endif	//__Socket_h
+#endif

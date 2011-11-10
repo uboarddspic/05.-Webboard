@@ -4,7 +4,7 @@
 #ifndef	__Peripherals_h
 #define	__Peripherals_h
 
-// Initializations
+/* Initializations */
 void Init(void);
 void Init_shift(void);
 void Init_RGB(void);
@@ -22,7 +22,7 @@ void Init_DAC_sine(void);
 void Init_ADC_echo(void);
 void Init_DAC_echo(void);
 
-// Peripherals
+/* Peripherals */
 int ADC(int c);
 void DAC(int left, int right);
 void RGBfade(int r, int g, int b);
@@ -30,12 +30,12 @@ void setRGB(int r, int g, int b);
 void Shiftleds(unsigned short i);
 void VU_meter(unsigned short l,unsigned short r);
 
-// Serial communication
-void Putcharacter(char c);
-void Putstr(char *s);
-char Getcharacter(void);
+/* Serial communication */
+void Putchar(unsigned char c);
+void Putstr(unsigned char *s);
+char Getchar(void);
 
-// I2C 
+/* I2C */
 #define gControlByte  0x40
 #define WrtCmd  0
 #define RdCmd   1
@@ -68,12 +68,12 @@ unsigned char Read23X08_17(unsigned char reg, unsigned char gAddrPins);
 void WaitForACK(void);
 unsigned char Switches(void);
                                                 
-// LCD control bit setup                          R/S   E   R/W (N/A)
-#define WRT_READ  0x60    // Read Data from LCD    0    1    1    0
-#define WRT_INST  0x40    // Write Instr to LCD    0    1    0    0
-#define WRT_DATA  0xC0    // Write DATA to LCD     1    1    0    0
+/* LCD control bit setup                          R/S   E   R/W (N/A) */
+#define WRT_READ  0x60    /* Read Data from LCD    0    1    1    0 */
+#define WRT_INST  0x40    /* Write Instr to LCD    0    1    0    0 */
+#define WRT_DATA  0xC0    /* Write DATA to LCD     1    1    0    0 */
 
-// LCD
+/* LCD */
 void Write_LCD(unsigned char * text);
 void LCD_Write_INST(unsigned char display_value);
 void LCD_Write_DATA(unsigned char display_value);
@@ -86,4 +86,4 @@ void LCD_PutByte(unsigned char c);
 void LCD_PutWord(unsigned short w);
 void LCD_PutLong(unsigned long l);
 
-#endif	//__Peripherals__
+#endif

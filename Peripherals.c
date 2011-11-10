@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////
+/*/////////////////////////////////////////////////////////////////////////
 //
 //  File Name    : Peripherals.c
 //  Version      : 1.1
@@ -10,20 +10,17 @@
 //  Programmer   : uBRD bootloader
 //  Last Updated : 21-06-2011
 //
-//  Get latest updates from www.uboard.eu
-//  Copyright (c) Staronic 2011.
+//  Get latest updates from www.uBoard.eu
+//  Copyright (c) Bloxi 2011.
 //  All rights are reserved. Reproduction in whole or in part is
 //  prohibited without the written consent of the copyright owner.
-///////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////*/
 #include    "Delay.h"
 #include    "i2c.h"
 #include    "Peripherals.h"
 #include    "uBRD.h"
 
-///////////////////////////////////////////////////////////////////////////
-//  Onboard initializations	                                         //
-///////////////////////////////////////////////////////////////////////////
-
+/* Onboard initializations */
 void Init(void) {
     /*
      *  Initialize PLL for maximum speed
@@ -31,32 +28,32 @@ void Init(void) {
      *  Fosc= 8 MHz * 40/(2*2) = 80 Mhz
      *  Fcy = 40 MHz
      */
-    // Tune FRC oscillator: 7.370 MHz + 21*30kHz= 8 Mhz
+    /* Tune FRC oscillator: 7.370 MHz + 21*30kHz= 8 Mhz */
     OSCTUN = 21;
-    PLLFBD = 38; // M=40
-    CLKDIVbits.PLLPOST = 0; // N1=2
-    CLKDIVbits.PLLPRE = 0; // N2=2
+    PLLFBD = 38; /* M=40 */
+    CLKDIVbits.PLLPOST = 0; /* N1=2 */
+    CLKDIVbits.PLLPRE = 0; /* N2=2 */
 }
 
 void Init_shift(void) {
-    // Initialize digital I/O
-    T_SHIFT_DATA; // Shiftregister data
-    T_SHIFT_CLOCK; // Shiftregister clock
-    T_SHIFT_STROBE; // Shiftregister strobe
+    /* Initialize digital I/O */
+    T_SHIFT_DATA; /* Shiftregister data */
+    T_SHIFT_CLOCK; /* Shiftregister clock */
+    T_SHIFT_STROBE; /* Shiftregister strobe */
 }
 
 void Init_RGB(void) {
-    OSCCONbits.IOLOCK = 0; // Clear I/O lock
-    RPOR1 = 0x1200; // RP3 Led Red (OC1)
-    RPOR2 = 0x0013; // RP4 Led Green (OC2)
-    RPOR3 = 0x1400; // RP7 Led Blue (OC3)
-    RPOR5 = 0x1500; //RP11 piezo speaker  /RP10 nc
-    OSCCONbits.IOLOCK = 1; // Set I/O lock
+    OSCCONbits.IOLOCK = 0; /* Clear I/O lock */
+    RPOR1 = 0x1200; /* RP3 Led Red (OC1) */
+    RPOR2 = 0x0013; /* RP4 Led Green (OC2) */
+    RPOR3 = 0x1400; /* RP7 Led Blue (OC3) */
+    RPOR5 = 0x1500; /*RP11 piezo speaker  /RP10 nc */
+    OSCCONbits.IOLOCK = 1; /* Set I/O lock */
 }
 
 void Erase_VU(void) {
     int i;
-    // Erase VU meter leds
+    /* Erase VU meter leds */
     SHIFT_DATA = 0;
     SHIFT_CLOCK = 0;
     for (i = 0; i < 16; i++) {
@@ -69,28 +66,28 @@ void Erase_VU(void) {
 
 void Init_mcp(void) {
     unsigned int config2, config1;
-    config2 = 0x190; // Baud rate is set for 100 kHz
-    config1 = 0b1000001000100000;
-    /* 
+    config2 = 0x190; /* Baud rate is set for 100 kHz */
+    config1 = 0x8220;
+    /*
      * (I2C_ON & I2C_IDLE_CON & I2C_CLK_HLD & I2C_IPMI_DIS & I2C_7BIT_ADD &
      * I2C_SLW_DIS & I2C_SM_DIS & I2C_GCALL_DIS & I2C_STR_DIS & I2C_NACK &
      * I2C_ACK_DIS & I2C_RCV_DIS & I2C_STOP_DIS &   I2C_RESTART_DIS &
      * I2C_START_DIS)
      */
-    // Configure I2C for 7 bit address mode
+    /* Configure I2C for 7 bit address mode */
     OpenI2C1(config1, config2);
     IdleI2C1();
 
-    //Initialize MCP23017 i2c I/O expander
-    Write23X08_17(IOCONA, 0b01111000, 0x00);
-    Write23X08_17(GPPUA, 0x00, 0x00); // Set Pull-up resistors
-    Write23X08_17(GPPUB, 0x1F, 0x00); // Set Pull-up resistors
-    Write23X08_17(IPOLA, 0x00, 0x00); // I/O polarity normal
-    Write23X08_17(IPOLB, 0x00, 0x00); // I/O polarity normal
-    Write23X08_17(GPIOA, 0x00, 0x00); // Row is kept LOW while changing I/O
-    Write23X08_17(GPIOB, 0x00, 0x00); // Row is kept LOW while changing I/O
-    Write23X08_17(IODIRA, 0x00, 0x00); // Rows = inputs; Columns = outputs
-    Write23X08_17(IODIRB, 0x1F, 0x00); // Rows = inputs; Columns = outputs
+    /*Initialize MCP23017 i2c I/O expander */
+    Write23X08_17(IOCONA, 0x78, 0x00);
+    Write23X08_17(GPPUA, 0x00, 0x00); /* Set Pull-up resistors */
+    Write23X08_17(GPPUB, 0x1F, 0x00); /* Set Pull-up resistors */
+    Write23X08_17(IPOLA, 0x00, 0x00); /* I/O polarity normal */
+    Write23X08_17(IPOLB, 0x00, 0x00); /* I/O polarity normal */
+    Write23X08_17(GPIOA, 0x00, 0x00); /* Row is kept LOW while changing I/O */
+    Write23X08_17(GPIOB, 0x00, 0x00); /* Row is kept LOW while changing I/O */
+    Write23X08_17(IODIRA, 0x00, 0x00); /* Rows = inputs; Columns = outputs */
+    Write23X08_17(IODIRB, 0x1F, 0x00); /* Rows = inputs; Columns = outputs */
 }
 
 void Init_LCD(void) {
@@ -105,69 +102,70 @@ void Init_LCD(void) {
     LCD_Write_INST(0x38);
     Delayms(1);
 
-    // LCD operating characteristics
-    // cursor and display shift settings
+    /* LCD operating characteristics */
+    /* cursor and display shift settings */
     LCD_Write_INST(0x18);
-    // display on, blink off
+    /* display on, blink off */
     LCD_Write_INST(0x0C);
-    // clear display
+    /* clear display */
     LCD_Write_INST(0x01);
-    // entry mode settings
+    /* entry mode settings */
     LCD_Write_INST(0x06);
 }
 
 void Init_timers(void) {
-    // Initialize Timer2
-    OC1CONbits.OCTSEL = 0; // Timer2 = input
-    OC1CONbits.OCM = 0b110; // OC1 in PWM mode
+    /* Initialize Timer2 */
+    OC1CONbits.OCTSEL = 0; /* Timer2 = input */
+    OC1CONbits.OCM = 0x06; /* OC1 in PWM mode */
     OC1RS = 0;
-    OC2CONbits.OCTSEL = 0; // Timer2 = input
-    OC2CONbits.OCM = 0b110; // OC2 in PWM mode
+    OC2CONbits.OCTSEL = 0; /* Timer2 = input */
+    OC2CONbits.OCM = 0x06; /* OC2 in PWM mode */
     OC2RS = 0;
-    OC3CONbits.OCTSEL = 0; // Timer2 = input
-    OC3CONbits.OCM = 0b110; // OC3 in PWM mode
+    OC3CONbits.OCTSEL = 0; /* Timer2 = input */
+    OC3CONbits.OCM = 0x06; /* OC3 in PWM mode */
     OC3RS = 0;
 
-    T2CONbits.T32 = 0; // Timer2: 16 bits timer
-    T2CONbits.TCKPS = 0b10; // Timer2: prescaler 1:64
-    T2CONbits.TCS = 0; // Timer2: internal clock (Fosc/2)
-    T2CONbits.TGATE = 0; // Timer2: normal timer
-    PR2 = 256; // Timer2: reset at 256
-    T2CONbits.TON = 1; // Timer2: start
+    T2CONbits.T32 = 0; /* Timer2: 16 bits timer */
+    T2CONbits.TCKPS = 0x02; /* Timer2: prescaler 1:64 */
+    T2CONbits.TCS = 0; /* Timer2: internal clock (Fosc/2) */
+    T2CONbits.TGATE = 0; /* Timer2: normal timer */
+    PR2 = 256; /* Timer2: reset at 256 */
+    T2CONbits.TON = 1; /* Timer2: start */
 
-    // Initialize Timer4
-    T4CONbits.T32 = 0; // Timer4: 16 bits timer
-    T4CONbits.TCKPS = 0b01; // Timer4: prescaler 1:8
-    T4CONbits.TCS = 0; // Timer4: internal clock (Fosc/2)
-    T4CONbits.TGATE = 0; // Timer4: normal timer
-    PR4 = 500; // Timer4: reset at 500
-    T4CONbits.TON = 1; // Timer4: start (period= 100 us)
-    // Lowest frequency = 10kHz/(8000/20)= 25Hz
+    /* Initialize Timer4 */
+    T4CONbits.T32 = 0; /* Timer4: 16 bits timer */
+    T4CONbits.TCKPS = 0x01; /* Timer4: prescaler 1:8 */
+    T4CONbits.TCS = 0; /* Timer4: internal clock (Fosc/2) */
+    T4CONbits.TGATE = 0; /* Timer4: normal timer */
+    PR4 = 500; /* Timer4: reset at 500 */
+    T4CONbits.TON = 1; /* Timer4: start (period= 100 us) */
+    /* Lowest frequency = 10kHz/(8000/20)= 25Hz */
 }
 
 void Init_timer_echo(void) {
-    //Timer2 initialisation
-    T2CONbits.T32 = 0; // 16 bits timer
-    T2CONbits.TCKPS = 0b00; // Prescaler = 1:1
-    T2CONbits.TCS = 0; // Internal clock(Fosc/2)
-    T2CONbits.TGATE = 0; // Normal timer
-    IEC0bits.T2IE = 1; // Timer2 interrupt enable
-    IFS0bits.T2IF = 0; // Timer2 interrupt flag low
-    PR2 = 1000; // Timer2 period = 1000 * 2 = 2000 clock cycles
-    // = 80 MHz/2000 = 40000 kHz
-    INTCON1bits.NSTDIS = 1; // Interrupt nesting disabled
-    IPC1bits.T2IP = 0b111; // Highest interrupt priority
-    T2CONbits.TON = 1; // Interrupt on
+    /*Timer2 initialisation */
+    T2CONbits.T32 = 0; /* 16 bits timer */
+    T2CONbits.TCKPS = 0x00; /* Prescaler = 1:1 */
+    T2CONbits.TCS = 0; /* Internal clock(Fosc/2) */
+    T2CONbits.TGATE = 0; /* Normal timer */
+    IEC0bits.T2IE = 1; /* Timer2 interrupt enable */
+    IFS0bits.T2IF = 0; /* Timer2 interrupt flag low */
+    PR2 = 1000; /* Timer2 period = 1000 * 2 = 2000 clock cycles */
+    /* = 80 MHz/2000 = 40000 kHz */
+    INTCON1bits.NSTDIS = 1; /* Interrupt nesting disabled */
+    IPC1bits.T2IP = 0x07; /* Highest interrupt priority */
+    T2CONbits.TON = 1; /* Interrupt on */
 }
 
 void Init_timer1(void) {
-    T1CON = 0; // Timer reset
-    IFS0bits.T1IF = 0; // Reset Timer1 interrupt flag
-    IPC0bits.T1IP = 6; // Timer1 Interrupt priority level=4
-    TMR_ON = 1; // Enable Timer1 interrupt
+    T1CON = 0; /* Timer reset */
+    IFS0bits.T1IF = 0; /* Reset Timer1 interrupt flag */
+    IPC0bits.T1IP = 6; /* Timer1 Interrupt priority level=4 */
+    TMR_ON = 1; /* Enable Timer1 interrupt */
     TMR1 = 0x0000;
-    PR1 = 0xFFFF; // Timer1 period register
-    T1CONbits.TON = 1; // Enable Timer1 and start the counter
+    /* Interrupt every 0.025 S */
+    PR1 = 0xFFFF; /* Timer1 period register */
+    T1CONbits.TON = 1; /* Enable Timer1 and start the counter */
 }
 
 void Init_UART(void) {
@@ -179,19 +177,19 @@ void Init_UART(void) {
      *	8-bit, no parity, 2 stop bits
      */
     U1MODE = 0x8801;
-    U1STA = 0x0400; // Enable transmitter / Receiver is active
-    U1BRG = BRGVAL; // Initialize baud rate generator
+    U1STA = 0x0400; /* Enable transmitter / Receiver is active */
+    U1BRG = BRGVAL; /* Initialize baudrate generator */
 }
 
 void Init_buzzer(void) {
-    T_SPEAKER; // Activate speaker output
-    // Initialize PWM registers
-    T2CON = 0b1000000000010000; // Timer 2 1:8 prescale
-    T3CON = 0b1000000000010000; // Timer 3 1:8 prescale
-    OC1CON = 0b0000000000000110; // PWM mode timer 2 = timer source
-    OC2CON = 0b0000000000000110; // PWM mode timer 2 = timer source
-    OC3CON = 0b0000000000000110; // PWM mode timer 2 = timer source
-    OC4CON = 0b0000000000001110; // PWM mode timer 3 = timer source
+    T_SPEAKER; /* Activate speaker output */
+    /* Initialize PWM registers */
+    T2CON = 0x8010; /* Timer 2 1:8 prescale */
+    T3CON = 0x8010; /* Timer 3 1:8 prescale */
+    OC1CON = 0x0006; /* PWM mode timer 2 = timer source */
+    OC2CON = 0x0006; /* PWM mode timer 2 = timer source */
+    OC3CON = 0x0006; /* PWM mode timer 2 = timer source */
+    OC4CON = 0x0006; /* PWM mode timer 3 = timer source */
     OC1R = 0xFFFF;
     OC1RS = 0;
     OC2R = 0xFFFF;
@@ -203,96 +201,94 @@ void Init_buzzer(void) {
 }
 
 void Init_ADC_pot(void) {
-    // AD Conversion
-    AD1PCFGL = 0xFFFF; // Everything digital I/O
-    AD1PCFGLbits.PCFG0 = 0; // AN0 analog input (audio left)
-    AD1PCFGLbits.PCFG1 = 0; // AN1 analog input (audio right)
-    AD1PCFGLbits.PCFG2 = 0; // AN2 analog input (potmeter 1)
-    AD1PCFGLbits.PCFG3 = 0; // AN3 analog input (potmeter 2)
-    AD1PCFGLbits.PCFG4 = 0; // AN4 analog input (potmeter 3)
-    AD1CON1bits.AD12B = 0; // 10-bit conversion
-    AD1CON2bits.VCFG = 0b000; // AVdd and AVss as ADC reference
-    AD1CON3bits.ADRC = 0; // Systemclock for ADC
-    AD1CON3bits.ADCS = 3; // TAD = 4*Tcy = 100 ns
-    AD1CON3bits.SAMC = 15; // 16*TAD = sample time
-    AD1CON2bits.CHPS = 0b00; // Convert channel 0
-    AD1CON1bits.ASAM = 0; // Manually start sampling
-    AD1CON1bits.SSRC = 0b000; // Manually start conversion
-    AD1CON1bits.FORM = 0b01; // Signed integer
-    AD1CON1bits.ADON = 1; // Start A/D module
+    /* AD Conversion */
+    AD1PCFGL = 0xFFFF; /* Everything digital I/O */
+    AD1PCFGLbits.PCFG0 = 0; /* AN0 analog input (audio left) */
+    AD1PCFGLbits.PCFG1 = 0; /* AN1 analog input (audio right) */
+    AD1PCFGLbits.PCFG2 = 0; /* AN2 analog input (potmeter 1) */
+    AD1PCFGLbits.PCFG3 = 0; /* AN3 analog input (potmeter 2) */
+    AD1PCFGLbits.PCFG4 = 0; /* AN4 analog input (potmeter 3) */
+    AD1CON1bits.AD12B = 0; /* 10-bit conversion */
+    AD1CON2bits.VCFG = 0x00; /* AVdd and AVss as ADC reference */
+    AD1CON3bits.ADRC = 0; /* Systemclock for ADC */
+    AD1CON3bits.ADCS = 3; /* TAD = 4*Tcy = 100 ns */
+    AD1CON3bits.SAMC = 15; /* 16*TAD = sample time */
+    AD1CON2bits.CHPS = 0x00; /* Convert channel 0 */
+    AD1CON1bits.ASAM = 0; /* Manually start sampling */
+    AD1CON1bits.SSRC = 0x00; /* Manually start conversion */
+    AD1CON1bits.FORM = 0x01; /* Signed integer */
+    AD1CON1bits.ADON = 1; /* Start A/D module */
 }
 
 void Init_ADC_sine(void) {
-    AD1PCFGL = 0xFFFF; // Everything digital I/O
-    AD1PCFGLbits.PCFG0 = 0; // AN0 analog input (potmeter)
-    AD1PCFGLbits.PCFG1 = 0; // AN1 analog input (blue)
-    AD1PCFGLbits.PCFG2 = 0; // AN2 analog input (red, audio L)
-    AD1PCFGLbits.PCFG3 = 0; // AN3 analog input (green, audio R)
-    AD1CON1bits.AD12B = 0; // 10-bit conversion
-    AD1CON2bits.VCFG = 0b000; // AVdd and AVss as ADC reference voltage
-    AD1CON3bits.ADRC = 0; // System clock for ADC
-    AD1CON3bits.ADCS = 3; // TAD = 4*Tcy = 100 ns
-    AD1CON3bits.SAMC = 15; // 16*TAD = sampletime
-    AD1CHS0bits.CH0NA = 0; // Vref- = negative input
-    AD1CHS0bits.CH0SA = 2; // AN0 = positieve input
-    AD1CON2bits.CHPS = 0b00; // Convertert channel 0
-    AD1CON1bits.ASAM = 1; // Start sample automatic
-    AD1CON1bits.SSRC = 0b111; // Convert after sampletime automatic
-    AD1CON1bits.FORM = 0b01; // Signed integer format
-    AD1CON1bits.ADON = 1; // Start A/D module
+    AD1PCFGL = 0xFFFF; /* Everything digital I/O */
+    AD1PCFGLbits.PCFG0 = 0; /* AN0 analog input (potmeter) */
+    AD1PCFGLbits.PCFG1 = 0; /* AN1 analog input (blue) */
+    AD1PCFGLbits.PCFG2 = 0; /* AN2 analog input (red, audio L) */
+    AD1PCFGLbits.PCFG3 = 0; /* AN3 analog input (green, audio R) */
+    AD1CON1bits.AD12B = 0; /* 10-bit conversion */
+    AD1CON2bits.VCFG = 0x00; /* AVdd and AVss as ADC reference voltage */
+    AD1CON3bits.ADRC = 0; /* System clock for ADC */
+    AD1CON3bits.ADCS = 3; /* TAD = 4*Tcy = 100 ns */
+    AD1CON3bits.SAMC = 15; /* 16*TAD = sampletime */
+    AD1CHS0bits.CH0NA = 0; /* Vref- = negative input */
+    AD1CHS0bits.CH0SA = 2; /* AN0 = positieve input */
+    AD1CON2bits.CHPS = 0x00; /* Convertert channel 0 */
+    AD1CON1bits.ASAM = 1; /* Start sample automatic */
+    AD1CON1bits.SSRC = 0x07; /* Convert after sampletime automatic */
+    AD1CON1bits.FORM = 0x01; /* Signed integer format */
+    AD1CON1bits.ADON = 1; /* Start A/D module */
 }
 
 void Init_DAC_sine(void) {
-    ACLKCONbits.SELACLK = 0; // Fast RC with PLL as aux. osc divider source (80 MHz)
-    ACLKCONbits.ASRCSEL = 1; // Primair osc as aux. osc source
-    ACLKCONbits.APSTSCLR = 0b111; // Aux. oscillator divider 1
-    DAC1CONbits.DACFDIV = 3; // DAC clock divider 4
-    DAC1DFLT = 0x0000; // Default value
-    DAC1CONbits.FORM = 1; // Signed integer
-    DAC1STATbits.LOEN = 1; // Left output enabled
-    DAC1STATbits.ROEN = 1; // Right output enabled
-    DAC1CONbits.DACEN = 1; // Start D/A module
+    ACLKCONbits.SELACLK = 0; /* Fast RC with PLL as aux. osc divider source (80 MHz) */
+    ACLKCONbits.ASRCSEL = 1; /* Primair osc as aux. osc source */
+    ACLKCONbits.APSTSCLR = 0x07; /* Aux. oscillator divider 1 */
+    DAC1CONbits.DACFDIV = 3; /* DAC clock divider 4 */
+    DAC1DFLT = 0x0000; /* Default value */
+    DAC1CONbits.FORM = 1; /* Signed integer */
+    DAC1STATbits.LOEN = 1; /* Left output enabled */
+    DAC1STATbits.ROEN = 1; /* Right output enabled */
+    DAC1CONbits.DACEN = 1; /* Start D/A module */
 }
 
 void Init_ADC_echo(void) {
-    AD1CON1bits.ADON = 0; // ADC module off
-    AD1PCFGL = 0b0001111111111100; // AN0 and AN1 analog inputs
-    AD1CON2bits.VCFG = 0b000; // +Ref=AVDD and -Ref=AVSS
-    AD1CON3bits.ADCS = 0b0001010; // Tosc = 1/80 MHz * 2 = TCY * 10 = TAD
-    AD1CON3bits.ADRC = 0; // Clock is system clock
-    AD1CON2bits.CHPS = 0b00; // S/H ch0
-    AD1CHS0bits.CH0NA = 0; // Vref- is negative input
-    AD1CON1bits.SSRC = 0b111; // Auto-convert
-    AD1CON3bits.SAMC = 0b01010; // Sampling = 10 * TAD
-    AD1CON1bits.FORM = 0b01; // Integer is output in ADC1BUF0
-    AD1CON1bits.ASAM = 1; // Sampling starts when SAMP = 1
-    AD1CON1bits.AD12B = 1; // 12-bit, 1 channel ADC operation
-    AD1CON1bits.ADON = 1; // ADC module on
+    AD1CON1bits.ADON = 0; /* ADC module off */
+    AD1PCFGL = 0x1FFC; /* AN0 and AN1 analog inputs */
+    AD1CON2bits.VCFG = 0x00; /* +Ref=AVDD and -Ref=AVSS */
+    AD1CON3bits.ADCS = 0x0A; /* Tosc = 1/80 MHz * 2 = TCY * 10 = TAD */
+    AD1CON3bits.ADRC = 0; /* Clock is system clock */
+    AD1CON2bits.CHPS = 0x00; /* S/H ch0 */
+    AD1CHS0bits.CH0NA = 0; /* Vref- is negative input */
+    AD1CON1bits.SSRC = 0x07; /* Auto-convert */
+    AD1CON3bits.SAMC = 0x0A; /* Sampling = 10 * TAD */
+    AD1CON1bits.FORM = 0x01; /* Integer is output in ADC1BUF0 */
+    AD1CON1bits.ASAM = 1; /* Sampling starts when SAMP = 1 */
+    AD1CON1bits.AD12B = 1; /* 12-bit, 1 channel ADC operation */
+    AD1CON1bits.ADON = 1; /* ADC module on */
 }
 
 void Init_DAC_echo(void) {
-    DAC1CONbits.DACEN = 0; // Stop D/A module
-    ACLKCONbits.SELACLK = 0; // Fast RC with PLL as aux. osc divider source
-    ACLKCONbits.ASRCSEL = 1; // Primair oscillator as aux. oscillator source
-    ACLKCONbits.APSTSCLR = 0b111; // Aux. oscillator divider 1
-    DAC1CONbits.DACFDIV = 3; // DAC clock divider 4
-    DAC1DFLT = 0x0000; // Default value
-    DAC1CONbits.FORM = 1; // Signed integer as input
-    DAC1STATbits.LOEN = 1; // Left output enabled
-    DAC1STATbits.ROEN = 1; // Right output enabled
-    DAC1CONbits.DACEN = 1; // Start D/A module
+    DAC1CONbits.DACEN = 0; /* Stop D/A module */
+    ACLKCONbits.SELACLK = 0; /* Fast RC with PLL as aux. osc divider source */
+    ACLKCONbits.ASRCSEL = 1; /* Primair oscillator as aux. oscillator source */
+    ACLKCONbits.APSTSCLR = 0x07; /* Aux. oscillator divider 1 */
+    DAC1CONbits.DACFDIV = 3; /* DAC clock divider 4 */
+    DAC1DFLT = 0x0000; /* Default value */
+    DAC1CONbits.FORM = 1; /* Signed integer as input */
+    DAC1STATbits.LOEN = 1; /* Left output enabled */
+    DAC1STATbits.ROEN = 1; /* Right output enabled */
+    DAC1CONbits.DACEN = 1; /* Start D/A module */
 }
 
-///////////////////////////////////////////////////////////////////////////
-//  Onboard peripherals 	                                           	 //
-///////////////////////////////////////////////////////////////////////////
+/*  Onboard peripherals  */
 
 int ADC(int c) {
-    AD1CHS0bits.CH0NA = 0; // Vref- = negative input
-    AD1CHS0bits.CH0SA = c; // AN<c> = positive input
-    AD1CON1bits.SAMP = 1; // start sampling
-    Delayus(10); // sampling time = 10us
-    AD1CON1bits.SAMP = 0; // start conversion
+    AD1CHS0bits.CH0NA = 0; /* Vref- = negative input */
+    AD1CHS0bits.CH0SA = c; /* AN<c> = positive input */
+    AD1CON1bits.SAMP = 1; /* start sampling */
+    Delayus(10); /* sampling time = 10us */
+    AD1CON1bits.SAMP = 0; /* start conversion */
     while (!AD1CON1bits.DONE);
     return (ADC1BUF0);
 }
@@ -306,20 +302,20 @@ void RGBfade(int r, int g, int b) {
     int i;
 
     for (i = 0; i < 128; i++) {
-        // Fade the 3 colors
+        /* Fade the 3 colors */
         setRGB((r * i) >> 7, (g * i) >> 7, (b * i) >> 7);
         Delayms(5);
     }
 
     for (i = 127; i > 0; i--) {
-        // Fade the 3 colors
+        /* Fade the 3 colors */
         setRGB((r * i) >> 7, (g * i) >> 7, (b * i) >> 7);
         Delayms(5);
     }
 }
 
 void setRGB(int r, int g, int b) {
-    // Assign PWM modules to R,G,B
+    /* Assign PWM modules to R,G,B */
     OC1RS = r;
     OC2RS = g;
     OC3RS = b;
@@ -332,7 +328,7 @@ void Shiftleds(unsigned short i) {
     SHIFT_STROBE = 0;
 
     for (j = 0; j < 17; j++) {
-        // Data gets clocked on rising edge
+        /* Data gets clocked on rising edge */
         SHIFT_CLOCK = 1;
         SHIFT_CLOCK = 0;
         if (i & 0x01) SHIFT_DATA = 1;
@@ -406,36 +402,37 @@ void VU_meter(unsigned short l, unsigned short r) {
     Shiftleds(lvu | rvu);
 }
 
-///////////////////////////////////////////////////////////////////////////
-//  Serial communication		                                     	 //
-///////////////////////////////////////////////////////////////////////////
+/*  Serial communication */
 
-void Putcharacter(char c) {
-    // Send a character to USB RS232 port
+void Putchar(unsigned char c) {
+    /* Send a character to USB RS232 port */
     while (U1STAbits.UTXBF);
     U1TXREG = c;
 }
 
-void Putstr(char *s) {
-    // Send a string to USB RS232 port
+void Putstr(unsigned char * s) {
+    /* Send a string to USB RS232 port */
+    unsigned char cnt;
+
     while (*s) {
-        Putcharacter(*s++);
+        Putchar(*s++);
     }
+    for (cnt = 0; s[cnt]; cnt++)
+        LCD_Write_DATA(s[cnt]);
 }
 
-char Getcharacter(void) {
-    // Receive a character from the RS232 port
+char Getchar(void) {
+    /* Receive a character from the RS232 port */
     while (!U1STAbits.URXDA);
     return (U1RXREG);
 }
 
-///////////////////////////////////////////////////////////////////////////
-//  Onboard I2C 			                                          	 //
-///////////////////////////////////////////////////////////////////////////
+/*  Onboard I2C */
 
-void Write23X08_17(unsigned char reg, unsigned char data, unsigned char gAddrPins) {
+void Write23X08_17(unsigned char reg, unsigned char data, unsigned char gAddrPins)
+{
     StartI2C1();
-    // Wait till start sequence is completed
+    /* Wait till start sequence is completed */
     while (I2C1CONbits.SEN);
     MasterWriteI2C1(gControlByte | WrtCmd | gAddrPins);
     WaitForACK();
@@ -444,7 +441,7 @@ void Write23X08_17(unsigned char reg, unsigned char data, unsigned char gAddrPin
     MasterWriteI2C1(data);
     WaitForACK();
     StopI2C1();
-    // Wait till stop sequence is completed
+    /* Wait till stop sequence is completed */
     while (I2C1CONbits.PEN);
 }
 
@@ -452,7 +449,7 @@ unsigned char Read23X08_17(unsigned char reg, unsigned char gAddrPins) {
     unsigned char num;
 
     StartI2C1();
-    // Wait till start sequence is completed
+    /* Wait till start sequence is completed */
     while (I2C1CONbits.SEN);
     MasterWriteI2C1(gControlByte | WrtCmd | gAddrPins);
     WaitForACK();
@@ -470,8 +467,8 @@ unsigned char Read23X08_17(unsigned char reg, unsigned char gAddrPins) {
 }
 
 void WaitForACK() {
-    // Wait till address is transmitted
-    while (I2C1STATbits.TBF); // 8 clock cycles
+    /* Wait till address is transmitted */
+    while (I2C1STATbits.TBF); /* 8 clock cycles */
     while (I2C1STATbits.TRSTAT);
     while (I2C1STATbits.ACKSTAT);
 }
@@ -479,7 +476,7 @@ void WaitForACK() {
 unsigned char Switches(void) {
     unsigned int io, rval;
 
-    // Returns the status of the five switches
+    /* Returns the status of the five switches */
     io = Read23X08_17(GPIOB, 0x00);
     rval = 0;
     /*
@@ -488,53 +485,52 @@ unsigned char Switches(void) {
      * [sw2]  [sw3]  [sw4]
      *        [sw5]
      */
-    if (!(io & 0b00010000)) rval |= 0b00000001; // SW1
-    if (!(io & 0b00001000)) rval |= 0b00000010; // SW2
-    if (!(io & 0b00000100)) rval |= 0b00000100; // SW3
-    if (!(io & 0b00000010)) rval |= 0b00001000; // SW4
-    if (!(io & 0b00000001)) rval |= 0b00010000; // SW5
+    if (!(io & 0x10)) rval |= 0x01; /* SW1 */
+    if (!(io & 0x08)) rval |= 0x02; /* SW2 */
+    if (!(io & 0x04)) rval |= 0x04; /* SW3 */
+    if (!(io & 0x02)) rval |= 0x08; /* SW4 */
+    if (!(io & 0x01)) rval |= 0x10; /* SW5 */
 
     return (rval);
 }
 
-///////////////////////////////////////////////////////////////////////////
-//  LCD functions                                                   	 //
-///////////////////////////////////////////////////////////////////////////
+/*  LCD functions */
 
 void Write_LCD(unsigned char * text) {
-    LCD_Clear();
     unsigned char cnt;
+    LCD_Clear();
 
     for (cnt = 0; text[cnt]; cnt++)
         LCD_Write_DATA(text[cnt]);
 }
 
-void LCD_Write_INST(unsigned char display_value) {
-    // Setup GPIOB LCD control bits for instruction
+void LCD_Write_INST(unsigned char display_value)
+{
+    /* Setup GPIOB LCD control bits for instruction */
     Write23X08_17(GPIOB, WRT_INST, 0x00);
-    // Write the Instruction to GPIOA
+    /* Write the Instruction to GPIOA */
     Write23X08_17(GPIOA, display_value, 0x00);
-    // Disable the LCD control bits on GPIOB
+    /* Disable the LCD control bits on GPIOB */
     Write23X08_17(GPIOB, 0x00, 0x00);
 }
 
 void LCD_Write_DATA(unsigned char display_value) {
     if (display_value == '\n') {
-        // Cursor on second line, first position
+        /* Cursor on second line, first position */
         LCD_Write_INST(0xc0);
     } else {
-        // Setup control bits on LCD
+        /* Setup control bits on LCD */
         Write23X08_17(GPIOB, WRT_DATA, 0x00);
-        // Write the data to the LCD
+        /* Write the data to the LCD */
         Write23X08_17(GPIOA, display_value, 0x00);
-        // Disable the LCD control bits on GPIOB
+        /* Disable the LCD control bits on GPIOB */
         Write23X08_17(GPIOB, 0x80, 0x00);
     }
 }
 
 void LCD_Clear(void) {
-    // This function clears the LCD and brings
-    // the cursor to the top left position
+    /* This function clears the LCD and brings */
+    /* the cursor to the top left position */
     LCD_Write_INST(0x01);
     LCD_Write_INST(0x06);
 }
@@ -550,31 +546,31 @@ void LCD_PutString(char *s) {
 }
 
 void LCD_AppendString(char *s) {
-    while (*s) { // Outputs a string
+    while (*s) { /* Outputs a string */
         LCD_Write_DATA(*s++);
     }
 }
 
 void LCD_PutHex(unsigned char h) {
-    // Outputs a four-bit value as hex
+    /* Outputs a four-bit value as hex */
     h = (h & 0x0f) + '0';
     LCD_Write_DATA(h <= '9' ? h : h + 7);
 }
 
 void LCD_PutByte(unsigned char c) {
-    // Outputs a byte as two-character hex
+    /* Outputs a byte as two-character hex */
     LCD_PutHex(c >> 4);
     LCD_PutHex(c);
 }
 
 void LCD_PutWord(unsigned short w) {
-    // Outputs a word as four-character hex
+    /* Outputs a word as four-character hex */
     LCD_PutByte((unsigned char) (w >> 8));
     LCD_PutByte((unsigned char) w);
 }
 
 extern void LCD_PutLong(unsigned long l) {
-    // Outputs a long as eight-character hex
+    /* Outputs a long as eight-character hex */
     LCD_PutWord((unsigned short) (l >> 16));
     LCD_PutWord((unsigned short) l);
 }

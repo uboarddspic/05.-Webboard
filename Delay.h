@@ -7,4 +7,4 @@
 extern void Delayms(int n);
 extern void Delayus(int n);
 
-#endif	//__Delay_h
+#endif
